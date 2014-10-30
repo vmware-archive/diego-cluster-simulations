@@ -1,9 +1,10 @@
-TODO: add run details
-TODO: flesh out
+# Diego Cluster Simulations
 
-### Running on Diego
+A collection of simulations of Diego that run on Diego.
 
-In practice, spinning up hundreds of external processes to simulate a distributed auction fails hard when one is running such a simulation on a single desktop/laptop computer.  The small-scale scenarios encoded in the simulation work fine, but the larger-scale scenarios begin to fail because of resource constraints that are unrealistic and not endemic to the auction algorithm itself.  In short: the best to way to build confidence in the simulation (particularly a large-scale scenario) is to actually run the simulation on a cluster.
+## Auction Scenarios
+
+In practice, spinning up hundreds of external processes to simulate a distributed auction fails hard when one is running such a simulation on a single desktop/laptop computer.  The small-scale scenarios encoded in the [auction](http://github.com/cloudfoundry-incubator/auction) simulation work fine, but the larger-scale scenarios begin to fail because of resource constraints that are unrealistic and not endemic to the auction itself.  In short: the best to way to build confidence in the simulation (particularly a large-scale scenario) is to actually run the simulation on a cluster.
 
 This can be done with Diego.  When Diego gets an API it will be possible to do this by simply pointing the simulation at Diego's API endpoint.  Until then, you must follow these steps:
 
@@ -208,12 +209,11 @@ cat > desired_lrp_auctioneer-lite.json <<EOF
 }
 EOF
 
-for i in {1..800}; do sed "s/rep-lite-1/rep-lite-$i/g" desired_lrp_rep-lite.json > temp.json; veritas submit-lrp temp.json; done
-for i in {1..800}; do sed "s/auctioneer-lite-1/auctioneer-lite-$i/g" desired_lrp_auctioneer-lite.json > temp.json; veritas submit-lrp temp.json; done
+for i in {1..400}; do sed "s/rep-lite-1/rep-lite-$i/g" desired_lrp_rep-lite.json > temp.json; veritas submit-lrp temp.json; done
+for i in {1..400}; do sed "s/auctioneer-lite-1/auctioneer-lite-$i/g" desired_lrp_auctioneer-lite.json > temp.json; veritas submit-lrp temp.json; done
 
-for i in {1..800}; do veritas remove-lrp rep-lite-$i; done
-for i in {1..800}; do veritas remove-lrp auctioneer-lite-$i; done
-for i in {1..800}; do echo $i; curl http://auctioneer-lite-$i.diego-1.cf-app.com/routes > /dev/null ; done
+for i in {1..400}; do veritas remove-lrp rep-lite-$i; done
+for i in {1..400}; do veritas remove-lrp auctioneer-lite-$i; done
 ```
 
 3. Once this is done, you can run `ginkgo` under `auctionscenarios` to run the simulation on the cluster!
